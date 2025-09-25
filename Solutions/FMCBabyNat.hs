@@ -1,7 +1,7 @@
 module FMCBabyNat where
 
 -- Do not alter this import!
-import Prelude ( Show(..) , Eq(..) , undefined )
+import Prelude ( Show(..) , Eq(..) , undefined, Num (negate) )
 
 -- Define evenerything that is undefined,
 -- without using standard Haskell functions.
@@ -34,11 +34,13 @@ infixl 6 +
 
 -- Output: O means False, S O means True
 isZero :: Nat -> Nat
-isZero = undefined
+isZero O = S O
+isZero (S _) = O
 
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
-pred = undefined
+pred O = zero
+pred (S n) = n
 
 -- Output: O means False, S O means True
 even :: Nat -> Nat
@@ -59,19 +61,23 @@ monus = undefined
 
 -- multiplication
 (*) :: Nat -> Nat -> Nat
-(*) = undefined
+n * O = zero
+S n * m = m * n + m
 
 infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-(^) = undefined
+n ^ O = one
+n ^ (S m) = (n ^ m) * n
 
--- decide: infix? ? ^
+infixl 8 ^
 
 -- quotient
 (/) :: Nat -> Nat -> Nat
 (/) = undefined
+
+infixl 7 /
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
