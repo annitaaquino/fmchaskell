@@ -121,6 +121,7 @@ O ||| _ = O
       S _ -> O
     S _ -> O
 
+
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
 absDiff :: Nat -> Nat -> Nat
@@ -132,24 +133,29 @@ absDiff (S n) (S m) =
     O -> m -* n
     S _ -> n -* m  
   
-   
 
 (|-|) :: Nat -> Nat -> Nat
 (|-|) = absDiff
+
 
 factorial :: Nat -> Nat
 factorial O = one
 factorial (S O) = one
 factorial (S n) = S n * factorial n 
 
+
 -- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
 sg O = zero
-sg n = one
+sg (S n) = one
 
-
-
--- lo b a is the floor of the logarithm base b of a
-lo :: Nat -> Nat -> Nat
-lo = undefined
-
+-- lo b a is the floor of the logarithm base b of a;
+lo :: Nat -> Nat -> Nat 
+lo _ O = undefined
+lo (S O) (S (S _)) = undefined
+lo O (S _) = undefined
+lo _ (S O) = zero
+lo (S (S m))  n = 
+  case n / S (S m) of
+    O -> O
+    S _ -> S (lo (S (S m)) (n / S (S O)))
