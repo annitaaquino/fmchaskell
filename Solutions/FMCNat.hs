@@ -41,17 +41,17 @@ instance Show Nat where
 
 instance Eq Nat where
 
-    (==) O O = True
-    (==) O (S _) = False
-    (==) (S _) O = False
-    (==) (S n) (S m) = (==) n m
+    O == O = True
+    O == (S _) = False
+    (S _) == O = False
+    (S n) == (S m) = n == m
 
 instance Ord Nat where
 
-    (<=) O O = True
-    (<=) O (S n) = True
-    (<=) (S n) O = False
-    (<=) (S n) (S m) = (<=) n m
+    O <= O = True
+    O <= (S n) = True
+    (S n) <= O = False
+    (S n) <= (S m) = n <= m
 
     -- Ord does not REQUIRE defining min and max.
     -- Howevener, you should define them WITHOUT using (<=).
@@ -136,7 +136,7 @@ times (S n) m = times m (n + m)
 -- power / exponentiation
 pow :: Nat -> Nat -> Nat
 pow n O = one
-pow n  (S m) = times (pow n  m) n
+pow n  (S m) = pow n  m <*> n
 
 exp :: Nat -> Nat -> Nat
 exp = pow
@@ -149,29 +149,29 @@ exp = pow
 (</>) _ O = undefined 
 (</>) O _ = zero
 (</>) n (S m) = 
-  case monus n m of
+  case n <-> m of
     O -> O
-    _ -> S ((</>) (times n (S m)) (S m))
+    _ -> S ((n <-> S m) </> S m)
 
 -- remainder
 (<%>) :: Nat -> Nat -> Nat
 (<%>) _ O = undefined
 (<%>) n (S m) = 
-  case monus n m of
+  case n <-> m of
     O -> O
-    S _ -> monus n (times (S m) ((<%>) n (S m)))
+    S _ -> n <-> (S m * (n <%> S m))
 
 -- euclidean division
 eucdiv :: (Nat, Nat) -> (Nat, Nat)
-eucdiv = undefined
+eucdiv (n, m) = (n </> m, n <%> m) 
 
 -- divides
 (<|>) :: Nat -> Nat -> Bool
 (<|>) O _ = False
 (<|>) (S n) O = True
 (<|>) (S m) n = 
-  case (<%>) n (S m) of
-    O -> case monus (S m) n of
+  case n <%> S m of
+    O -> case S m <-> n of
       O -> False
       S _ -> True
     S _ -> True
@@ -186,16 +186,16 @@ dist O O = zero
 dist (S n) O = S n
 dist O (S n) = S n
 dist (S n) (S m) = 
-  case monus n m of
-    O -> monus m n
-    S _ -> monus n m
+  case n <-> m of
+    O -> m <-> n
+    S _ -> n <-> m
 
 (|-|) = dist
 
 factorial :: Nat -> Nat
 factorial O = one
 factorial (S O) = one
-factorial (S n) = times (S n) (factorial n) 
+factorial (S n) = S n * factorial n 
 
 -- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
@@ -209,9 +209,9 @@ lo (S O) (S (S _)) = undefined
 lo O (S _) = undefined
 lo _ (S O) = zero
 lo (S (S m))  n = 
-  case (</>) n  (S (S m)) of
+  case n </>  S (S m) of
     O -> O
-    S _ -> S (lo (S (S m)) ((</>) n (S (S O))))
+    S _ -> S (lo (S (S m)) (n </> S (S O)))
 
 ----------------------------------------------------------------
 -- Num & Integral fun
