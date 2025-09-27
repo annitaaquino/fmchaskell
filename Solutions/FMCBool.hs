@@ -36,7 +36,9 @@ instance Enum Bool where
 
 -- conjunction (AND)
 (&&) :: Bool -> Bool -> Bool
-(&&) = undefined
+(&&) True True = True
+(&&) _ False = False
+(&&) False _ = False
 
 infixr 3 &&
 
@@ -74,19 +76,26 @@ ifThenElse = undefined
 
 -- logical "implies"
 (==>) :: Bool -> Bool -> Bool
-(==>) = undefined
-
+(==>) False True = False
+(==>) True True = True
+(==>) _ False = False
 infixr 1 ==>
 
 -- logical "implied by"
 (<==) :: Bool -> Bool -> Bool
-(<==) = undefined
+(<==) True False = False
+(<==) True True = True
+(<==) False _ = False
+
 
 infixl 1 <==
 
 -- logical equivalence
 (<=>) :: Bool -> Bool -> Bool
-(<=>) = undefined
+(<=>) True True = True
+(<=>) False False = True
+(<=>) True False = False
+(<=>) False True = False
 
 infixr 1 <=>
 

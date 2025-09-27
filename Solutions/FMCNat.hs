@@ -12,10 +12,13 @@ import Prelude
     , Bool(..) , not , (&&) , (||)
     , ($)
     , (.)
+    , (++)
     , undefined
     , error
     , otherwise
     )
+import Distribution.Simple.Setup (trueArg, TestFlags (testDistPref))
+import Text.XHtml (tt)
 
 -- Define evenerything that is undefined,
 -- without using standard Haskell functions.
@@ -33,15 +36,22 @@ instance Show Nat where
 
     -- zero  should be shown as O
     -- three should be shown as SSSO
-    show = undefined
+    show O = "O"
+    show (S n) = "S" ++ show n
 
 instance Eq Nat where
 
-    (==) = undefined
+    (==) O O = True
+    (==) O (S _) = False
+    (==) (S _) O = False
+    (==) (S n) (S m) = (==) n m
 
 instance Ord Nat where
 
-    (<=) = undefined
+    (<=) O O = True
+    (<=) O (S n) = True
+    (<=) (S n) O = False
+    (<=) (S n) (S m) = (<=) n m
 
     -- Ord does not REQUIRE defining min and max.
     -- Howevener, you should define them WITHOUT using (<=).
@@ -53,21 +63,42 @@ instance Ord Nat where
 
 
 ----------------------------------------------------------------
+-- some sugar
+----------------------------------------------------------------
+
+zero, one, two, three, four, five, six, seven, eight :: Nat
+zero  = O
+one   = S zero
+two   = S one
+three = S two
+four  = S three
+five  = S four
+six   = S five
+seven = S six
+eight = S seven
+
+----------------------------------------------------------------
 -- internalized predicates
 ----------------------------------------------------------------
 
 isZero :: Nat -> Bool
-isZero = undefined
+isZero O = True
+isZero (S n) = False
 
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
-pred = undefined
+pred O = zero
+pred (S n) = n
 
 even :: Nat -> Bool
-even = undefined
+even O = True
+even (S O) = False
+even (S (S n)) = even n 
 
 odd :: Nat -> Bool
-odd = undefined
+odd O = False
+odd (S O) = True
+odd (S (S n)) = odd n  
 
 
 ----------------------------------------------------------------
@@ -76,42 +107,59 @@ odd = undefined
 
 -- addition
 (<+>) :: Nat -> Nat -> Nat
-(<+>) = undefined
+n <+> O = n
+n <+> S m = S (n <+> m)
 
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
 -- It behaves like subtraction, except that it returns 0
 -- when "normal" subtraction would return a negative number.
 monus :: Nat -> Nat -> Nat
-monus = undefined
+monus O n = O
+monus n O = n
+monus (S n) (S m) = monus n m
 
 (-*) :: Nat -> Nat -> Nat
-(-*) = undefined
+(-*) = monus
+
+(<->) :: Nat -> Nat -> Nat
+(<->) = (-*)
 
 -- multiplication
 times :: Nat -> Nat -> Nat
-times = undefined
+times n O = zero
+times (S n) m = times m (n + m)
 
 (<*>) :: Nat -> Nat -> Nat
 (<*>) = times
 
 -- power / exponentiation
 pow :: Nat -> Nat -> Nat
-pow = undefined
+pow n O = one
+pow n  (S m) = times (pow n  m) n
 
 exp :: Nat -> Nat -> Nat
-exp = undefined
+exp = pow
 
 (<^>) :: Nat -> Nat -> Nat
-(<^>) = undefined
+(<^>) = exp
 
 -- quotient
 (</>) :: Nat -> Nat -> Nat
-(</>) = undefined
+(</>) _ O = undefined 
+(</>) O _ = zero
+(</>) n (S m) = 
+  case monus n m of
+    O -> O
+    _ -> S ((</>) (times n (S m)) (S m))
 
 -- remainder
 (<%>) :: Nat -> Nat -> Nat
-(<%>) = undefined
+(<%>) _ O = undefined
+(<%>) n (S m) = 
+  case monus n m of
+    O -> O
+    S _ -> monus n (times (S m) ((<%>) n (S m)))
 
 -- euclidean division
 eucdiv :: (Nat, Nat) -> (Nat, Nat)
@@ -119,30 +167,51 @@ eucdiv = undefined
 
 -- divides
 (<|>) :: Nat -> Nat -> Bool
-(<|>) = undefined
+(<|>) O _ = False
+(<|>) (S n) O = True
+(<|>) (S m) n = 
+  case (<%>) n (S m) of
+    O -> case monus (S m) n of
+      O -> False
+      S _ -> True
+    S _ -> True
 
-divides = (<|>)
-
+divides = (</>)
 
 -- distance between nats
 -- x `dist` y = |x - y|
 -- (Careful here: this - is the real minus operator!)
 dist :: Nat -> Nat -> Nat
-dist = undefined
+dist O O = zero
+dist (S n) O = S n
+dist O (S n) = S n
+dist (S n) (S m) = 
+  case monus n m of
+    O -> monus m n
+    S _ -> monus n m
 
 (|-|) = dist
 
 factorial :: Nat -> Nat
-factorial = undefined
+factorial O = one
+factorial (S O) = one
+factorial (S n) = times (S n) (factorial n) 
 
 -- signum of a number (-1, 0, or 1)
 sg :: Nat -> Nat
-sg = undefined
+sg O = zero
+sg (S n) = one
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
-lo = undefined
-
+lo _ O = undefined
+lo (S O) (S (S _)) = undefined
+lo O (S _) = undefined
+lo _ (S O) = zero
+lo (S (S m))  n = 
+  case (</>) n  (S (S m)) of
+    O -> O
+    S _ -> S (lo (S (S m)) ((</>) n (S (S O))))
 
 ----------------------------------------------------------------
 -- Num & Integral fun
