@@ -18,7 +18,7 @@ import Prelude
     , otherwise
     )
 import Distribution.Simple.Setup (trueArg, TestFlags (testDistPref))
-import Text.XHtml (tt)
+import Text.XHtml (tt, name)
 
 -- Define evenerything that is undefined,
 -- without using standard Haskell functions.
@@ -57,9 +57,16 @@ instance Ord Nat where
     -- Howevener, you should define them WITHOUT using (<=).
     -- Both are binary functions: max m n = ..., etc.
 
-    min = undefined
+    min O O = O
+    min O n = O
+    min n O = O
+    min (S n) (S m) = S (min n m) 
 
-    max = undefined
+
+    max O O = O
+    max O n = n
+    max n O = n
+    max (S n) (S m) = S (max n m) 
 
 
 ----------------------------------------------------------------
@@ -127,11 +134,11 @@ monus (S n) (S m) = monus n m
 
 -- multiplication
 times :: Nat -> Nat -> Nat
-times n O = zero
-times (S n) m = times m (n + m)
-
 (<*>) :: Nat -> Nat -> Nat
 (<*>) = times
+n <*> O = zero
+(S n) <*> m = m <*> (n + m)
+
 
 -- power / exponentiation
 pow :: Nat -> Nat -> Nat
