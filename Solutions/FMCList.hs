@@ -137,8 +137,6 @@ drop 0 xs = xs
 drop i [] = []
 drop i (x : xs) = drop (i - 1) xs
 
-
-
 -- takeWhile
 -- dropWhile
 
