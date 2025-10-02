@@ -97,11 +97,11 @@ infixr 5 ++
 -- (snoc is cons written backwards)
 snoc :: a -> [a] -> [a]
 snoc a []= [a]
-snoc a (x : xs) = snoc a xs
+snoc a (x : xs) = (x : xs) ++ [a]
 
 (<:) :: [a] -> a -> [a]
 (<:) [] a = [a]
-(<:) (x : xs) a = (<:) xs a
+(<:) (x : xs) a = (x : xs) ++ [a]
 
 -- different implementation of (++)
 (+++) :: [a] -> [a] -> [a]
@@ -110,7 +110,7 @@ xs +++ [y]    = xs <: y
 xs +++ (y:ys) = (xs +++ [y]) +++ ys
 
 -- left-associative for performance!
--- (hmmm?!)
+-- (hmm?!)
 infixl 5 +++
 
 -- minimum :: Ord a => [a] -> a
@@ -126,7 +126,18 @@ maximum [a] = a
 maximum (x : xs) = max x (maximum xs)
 
 -- take
+take :: Int -> [a] -> [a]
+take _ [] = []
+take 0 _ = []
+take  i (x : xs) = x : take (i - 1) xs
+
 -- drop
+drop :: Int -> [a] -> [a]
+drop 0 xs = xs
+drop i [] = []
+drop i (x : xs) = drop (i - 1) xs
+
+
 
 -- takeWhile
 -- dropWhile
@@ -183,18 +194,7 @@ maximum (x : xs) = max x (maximum xs)
 -- transpose
 
 -- checks if the letters of a phrase form a palindrome (see below for examples)
-palindrome :: String -> Bool
-palindrome = undefined
+-- palindrome :: String -> Bool
+-- palindrome = undefined
 
-{-
-
-Examples of palindromes:
-
-"Madam, I'm Adam"
-"Step on no pets."
-"Mr. Owl ate my metal worm."
-"Was it a car or a cat I saw?"
-"Doc, note I dissent.  A fast never prevents a fatness.  I diet on cod."
-
--}
 
