@@ -34,11 +34,16 @@ flip f a b = f b a
 
 -- ($) takes a function and a suitable argument and applies the function to the argument
 -- think: why would we ever want that?
+($) :: (a -> b) -> a -> b
+f $ x = f x
+-- this could be a long shot, but if you had a gigantic function and a lot of different arguements to test,
+-- this could help you a out a lot in the matter of not losing as much time as you would have if you had to
+-- repeat the function every time to test every single arguement
+
 
 -- iterate: figure it out by its type
 iterate :: (a -> a) -> a -> [a]
-iterate = undefined
+iterate f x = x : iterate f (f x)
 
 -- orbit
 orbit = flip iterate
-
