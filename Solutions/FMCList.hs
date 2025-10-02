@@ -138,19 +138,49 @@ drop i [] = []
 drop i (x : xs) = drop (i - 1) xs
 
 -- takeWhile
+takeWhile :: (a -> Bool) -> [a] -> [a]
+takeWhile _ [] = []
+takeWhile b (x : xs) = if b x then x : takeWhile b xs else []
+
 -- dropWhile
+dropWhile :: (a -> Bool) -> [a] -> [a]
+dropWhile _ [] = []
+dropWhile b (x : xs) = if b x then dropWhile b xs else x : xs
 
 -- tails
+tails :: [a] -> [[a]]
+tails = undefined
+
 -- init
+init :: [a] -> [a]
+init = undefined
+
 -- inits
+inits :: [a] -> [[a]]
+inits = undefined
+
 
 -- subsequences
+subsequences :: Eq a => [a] -> [[a]]
+subsequences = undefined
+
 
 -- any
+any :: (a -> Bool) -> [a] -> Bool
+any = undefined
+
 -- all
+all :: (a -> Bool) -> [a] -> Bool
+all = undefined
 
 -- and
+and :: [Bool] -> Bool
+and [] = True
+and (x : xs) = x && and xs
+
 -- or
+or :: [Bool] -> Bool
+or = undefined
 
 -- concat
 
@@ -192,7 +222,19 @@ drop i (x : xs) = drop (i - 1) xs
 -- transpose
 
 -- checks if the letters of a phrase form a palindrome (see below for examples)
--- palindrome :: String -> Bool
--- palindrome = undefined
+palindrome :: String -> Bool
+palindrome = undefined
+
+{-
+
+Examples of palindromes:
+
+"Madam, I'm Adam"
+"Step on no pets."
+"Mr. Owl ate my metal worm."
+"Was it a car or a cat I saw?"
+"Doc, note I dissent.  A fast never prevents a fatness.  I diet on cod."
+
+-}
 
 

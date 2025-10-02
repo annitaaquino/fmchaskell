@@ -1,6 +1,6 @@
 {-# LANGUAGE GADTs #-}
 
-module ExList where
+module FMCFun where
 
 import Prelude hiding
     ( (.) , ($)
@@ -12,18 +12,22 @@ import Prelude hiding
 
 -- curry takes a "traditional" binary function
 -- and returns its currified version
-curry :: undefined
-curry = undefined
+curry :: ((a, b) -> c) -> a -> b -> c
+curry f a b = f (a, b)
 
 -- uncurry takes a currified function
 -- and returns its "traditional" binary version
-uncurry :: undefined
-uncurry = undefined
+uncurry :: (a -> b -> c) -> (a, b) -> c
+uncurry f (a, b) = f a b
 
 -- flip takes a (currified) binary function
 -- and returns one that behaves the same but takes its arguments in the opposite order
+flip :: (a -> b -> c) -> b -> a -> c
+flip f a b = f b a
 
 -- (.) takes two composable functions and returns their composition
+(.) :: (a -> b) -> (b -> c) -> (a -> c)
+(f . g) x = g (f x)
 
 -- (.>) is composition but in diagramatic notation (should be ; but Haskell forbids)
 (.>) = flip (.)
