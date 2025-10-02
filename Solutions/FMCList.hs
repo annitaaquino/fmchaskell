@@ -13,6 +13,7 @@ import Prelude
 import qualified Prelude   as P
 import qualified Data.List as L
 import qualified Data.Char as C
+import System.Win32 (COORD(yPos))
 
 {- import qualified ... as ... ?
 
@@ -58,28 +59,36 @@ write [u,v]     for our u `Cons` (v `Cons` Nil)
 -}
 
 head :: [a] -> a
-head = undefined
+head [] = error "empty list"
+head (x : _) = x
 
 tail :: [a] -> [a]
-tail = undefined
+tail [] = error "empty list"
+tail (_ : xs) = xs
 
 null :: [a] -> Bool
-null = undefined
+null [] = True 
+null (x : _) = False
 
 length :: Integral i => [a] -> i
-length = undefined
+length [] = 0
+length (x : xs) = 1 + length xs
 
 sum :: Num a => [a] -> a
-sum = undefined
+sum [] = 0
+sum (x : xs) = x + sum xs
 
 product :: Num a => [a] -> a
-product = undefined
+product [] = 1
+product (x : xs) = x * product xs 
 
 reverse :: [a] -> [a]
-reverse = undefined
+reverse [] = []
+reverse (x : xs) = reverse xs ++ [x] 
 
 (++) :: [a] -> [a] -> [a]
-(++) = undefined
+(++) [] xs = xs
+(++) (x : xs) ys = x : (xs ++ ys)
 
 -- right-associative for performance!
 -- (what?!)
@@ -87,10 +96,12 @@ infixr 5 ++
 
 -- (snoc is cons written backwards)
 snoc :: a -> [a] -> [a]
-snoc = undefined
+snoc a []= [a]
+snoc a (x : xs) = snoc a xs
 
 (<:) :: [a] -> a -> [a]
-(<:) = flip snoc
+(<:) [] a = [a]
+(<:) (x : xs) a = (<:) xs a
 
 -- different implementation of (++)
 (+++) :: [a] -> [a] -> [a]
@@ -99,11 +110,20 @@ xs +++ [y]    = xs <: y
 xs +++ (y:ys) = (xs +++ [y]) +++ ys
 
 -- left-associative for performance!
--- (hmm?!)
+-- (hmmm?!)
 infixl 5 +++
 
 -- minimum :: Ord a => [a] -> a
+minimum :: Ord a => [a] -> a
+minimum [] = error "empty list"
+minimum [a] = a
+minimum (x : xs) = min x (minimum xs)
+
 -- maximum :: Ord a => [a] -> a
+maximum :: Ord a => [a] -> a
+maximum [] = error "empty list"
+maximum [a] = a
+maximum (x : xs) = max x (maximum xs)
 
 -- take
 -- drop
